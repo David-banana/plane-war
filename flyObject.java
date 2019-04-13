@@ -45,4 +45,5 @@ public abstract class flyObject {
 		int y =  bullet.y;
 		return this.x<x && x<this.x+width && this.y<y && y<this.y+height; 
 	}
+	 public abstract boolean outOfBounds();
 }

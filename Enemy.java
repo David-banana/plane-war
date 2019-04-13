@@ -1,6 +1,5 @@
 package feiJiDaZhan;
 
-import java.awt.Window;
 
 //敌机
 public class Enemy extends flyObject{
@@ -19,5 +18,10 @@ public class Enemy extends flyObject{
 		width = img.getWidth();
 		height = img.getHeight();
 		speed = (int) ((Math.random() * 5) + 5);
+	}
+	@Override
+	public boolean outOfBounds() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

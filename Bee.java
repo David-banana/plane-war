@@ -1,6 +1,5 @@
 package feiJiDaZhan;
 
-import java.awt.image.BufferedImage;
 
 //小蜜蜂
 public class Bee extends flyObject implements Award{
@@ -34,5 +33,10 @@ public class Bee extends flyObject implements Award{
 	public int getType() {
 		// TODO Auto-generated method stub
 		return type;
+	}
+	@Override
+	public boolean outOfBounds() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

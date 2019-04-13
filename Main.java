@@ -21,7 +21,6 @@ import javax.swing.JPanel;
 public class Main extends JPanel{
 	public static final int WIDTH = 400;
 	public static final int HEIGHT = 690;//定义窗口的长度和宽度
-	Hero hero01 = new Hero();
 	Hero hero = new Hero();
 	flyObject[] flys = {};
 	Bullet[] bullets = {};
@@ -51,14 +50,11 @@ public static BufferedImage gameover;
 		    pause= ImageIO.read(new File(Hero.class.getResource("pause.png").getFile()));
 		    gameover= ImageIO.read(new File(Hero.class.getResource("gameover.png").getFile()));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	/*启动执行代码*/
-	
-	
 	//定义一个定时器
 	Timer timer = new Timer();
 	int i;
@@ -66,27 +62,24 @@ public static BufferedImage gameover;
 		 MouseAdapter l = new MouseAdapter() {
 	            @Override
 	            public void mouseMoved(MouseEvent e) { // 鼠标移动
-	                if (state == RUNNING) { // 运行状态下移动英雄机--随鼠标位置
+	                if (state == RUNNING) { // 控制英雄机
 	                    int x = e.getX();
 	                    int y = e.getY();
 	                    hero.moveTo(x, y);
 	                }
 	            }
-
 	            @Override
 	            public void mouseEntered(MouseEvent e) { // 鼠标进入
-	                if (state == PAUSE) { // 暂停状态下运行
+	                if (state == PAUSE) { // 继续游戏
 	                    state = RUNNING;
 	                }
 	            }
-
 	            @Override
 	            public void mouseExited(MouseEvent e) { // 鼠标退出
-	                if (state != GAME_OVER&&state!=START) { // 游戏未结束，则设置其为暂停
+	                if (state != GAME_OVER&&state!=START) { //游戏中途暂停
 	                    state = PAUSE;
 	                }
 	            }
-
 	            @Override
 	            public void mouseClicked(MouseEvent e) { // 鼠标点击
 	                switch (state) {
@@ -115,8 +108,10 @@ public static BufferedImage gameover;
 				i++;
 				shoot();
 				moveBullets();//移动子弹
-				moveFlyObject();	//敌机小蜜蜂（飞行物）移动//自动生成敌机和小蜜蜂（飞行物）
-				
+				moveFlyObject();
+				bangAction();//敌机小蜜蜂（飞行物）移动//自动生成敌机和小蜜蜂（飞行物）
+//				outOfBoundsAction();
+				shootAction();
 				if(i % 2 == 0) {
 					createFlyObject();
 				}
@@ -154,6 +149,67 @@ public static BufferedImage gameover;
 			flys[i].step();
 		}
 	}
+	public void bangAction() {
+        for (int i = 0; i < flys.length; i++) { // 遍历所有飞机
+            flyObject f = flys[i];
+            if (hero.bombjustice(f)) { // 判断是否击中
+                 // 记录被击中的飞行物的索引
+            	flyObject temp = flys[i]; // 被击中的飞行物与最后一个飞行物交换
+            	flys[i] = flys[flys.length - 1];
+            	flys[flys.length - 1] = temp;
+            	flys = Arrays.copyOf(flys, flys.length - 1);// 删除最后一个飞行物(即被击中的)
+                break;
+            }
+        }
+    }
+	public void shootAction() {
+		   for (int i = 0; i < bullets.length; i++) { // 遍历所有子弹
+	            Bullet b = bullets[i];
+	            bang(b);
+	}
+	}
+	
+	public void bang(Bullet bullet) {
+		 int index = -1;
+            for (int i = 0; i < flys.length; i++) {//遍历所有飞机
+                flyObject obj = flys[i];
+            if (obj.shootBy(bullet)) { // 判断是否击中
+                 // 记录被击中的飞行物的索引
+            	 index = i;
+            	 break;
+            }
+            if (index != -1) {
+            	flyObject temp = flys[index]; // 被击中的飞行物与最后一个飞行物交换
+            	flys[index] = flys[flys.length - 1];
+            	flys[flys.length - 1] = temp;
+            	flys = Arrays.copyOf(flys, flys.length - 1);// 删除最后一个飞行物(即被击中的)
+                break;
+            }
+            }
+            }
+        
+public void outOfBoundsAction() {
+     int index = 0; // 索引
+     flyObject[] flyingLives = new flyObject[flys.length]; // 活着的飞行物
+     for (int i = 0; i < flys.length; i++) {
+         flyObject f = flys[i];
+         if (!f.outOfBounds()) {
+             flyingLives[index++] = f; // 不越界的留着
+         }
+     }
+     flys = Arrays.copyOf(flyingLives, index); // 将不越界的飞行物都留着
+
+     index = 0; // 索引重置为0
+     Bullet[] bulletLives = new Bullet[bullets.length];
+     for (int i = 0; i < bullets.length; i++) {
+         Bullet b = bullets[i];
+         if (!b.outOfBounds()) {
+             bulletLives[index++] = b;
+         }
+     }
+     bullets = Arrays.copyOf(bulletLives, index); // 将不越界的子弹留着
+ }
+
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);//调用父类的paint的方法
@@ -207,21 +263,9 @@ public static BufferedImage gameover;
 		g.drawImage(bullets[i].getImage(), bullets[i].getX(),bullets[i].getY()+hero.getHeight(),null );
 		}
 	}
-	Bee bee01 = new Bee();
-	private void paintBee(Graphics g) {
-		g.drawImage(bee01.img ,bee01.x, bee01.y,null);
-	}
-	Enemy enemy = new Enemy();
-	private void paintEnemy(Graphics g) {
-		g.drawImage(enemy.img, enemy.x, enemy.y,null);
-	}
 	BackGround background01 = new BackGround();
 	private void paintBackground(Graphics g) {
 		g.drawImage(background01.img, background01.x, background01.y,null);
-	}
-	Bullet bullet01 = new Bullet(i, i);
-	private void paintBullet(Graphics g) {
-		
 	}
 	
 	
@@ -239,23 +283,7 @@ public static BufferedImage gameover;
 			this.action();
 	}
 		
-	public  void bang (Bullet bullet) {
-		int index = -1;
-		for(int i = 0; i < flys.length; i ++) {
-			flyObject obj = flys[i];
-			if(obj.shootBy(bullet)) {
-				index = i;
-				break;
-			}
-		}
-		if(index != -1) {
-			flyObject one = flys[index];
-			flyObject temp = flys[index];
-			flys[index] = flys[flys.length - 1];
-			flys[flys.length - 1] = temp;
-			flys = Arrays.copyOf(flys, flys.length - 1);
-		}
-	}
+
 	
 	public static void main(String[] args) {
 		new Main().showMe();

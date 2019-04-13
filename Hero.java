@@ -1,11 +1,10 @@
 package feiJiDaZhan;
 
 import java.awt.image.BufferedImage;
-import com.sun.javafx.iio.ImageStorage;
-import com.sun.prism.Image;
+
 
 //我方飞机
-public class Hero extends flyObject{
+public class  Hero extends flyObject{
 	public BufferedImage[] getImgs() {
 		return imgs;
 	}
@@ -68,9 +67,21 @@ public class Hero extends flyObject{
 		this.y = y - height/2;
 		
 	}
+	 @Override
 	public void step() {
 		if(imgs.length > 0) {
 			 img = imgs[index++/10%imgs.length];
 		}
+	}
+	public boolean bombjustice(flyObject other) {
+			double x1 = this.x - other.width;
+			double x2 = this.x + this.width;
+			double y1 = this.y - other.height;
+			double y2 = this.y + this.height;
+			return x1 < other.x && other.x < x2 && other.y > y1 && other.y < y2	;
+	}
+	@Override
+	public boolean outOfBounds() {
+		return false;
 	}
 }

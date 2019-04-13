@@ -13,5 +13,10 @@ public class Bullet extends flyObject{
 	public void step(){
 		y -= 20;
 	}
+	@Override
+	public boolean outOfBounds() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }
